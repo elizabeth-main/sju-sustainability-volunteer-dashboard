@@ -107,6 +107,22 @@ def calculate_distance_miles(lat1, lon1, lat2, lon2):
 # -------------------------------------------------------------------
 # 3. FEED FETCHERS (RSS & iCal)
 # -------------------------------------------------------------------
+def fetch_rss_events(feed_info):
+    raw_entries = []
+    try:
+        parsed_feed = feedparser.parse(feed_info["url"])
+        for entry in parsed_feed.entries[:10]:
+            raw_entries.append({
+                "source_org": feed_info["name"],
+                "raw_title": entry.get("title", ""),
+                "raw_text": entry.get("summary", "") or entry.get("description", ""),
+                "link": entry.get("link", ""),
+                "lat": feed_info["default_lat"],
+                "lon": feed_info["default_lon"]
+            })
+    except Exception as e:
+        print(f"⚠️ Warning: Failed to fetch RSS feed for {feed_info['name']}: {e}")
+    return raw_entries
 def fetch_ical_events(feed_info):
     raw_entries = []
     try:
