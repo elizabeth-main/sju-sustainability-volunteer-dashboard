@@ -31,12 +31,12 @@
           <i class="fa-solid fa-leaf text-2xl text-white"></i>
         </div>
         <div>
-          <h1 class="text-xl font-bold tracking-tight text-white">Saint Joseph's University | Sustainability Volunteer Hub</h1>
-          <p class="text-xs text-emerald-200">Local Opportunities • Hawk Hill, Philadelphia, PA</p>
+          <h1 class="text-xl font-bold tracking-tight text-white">Saint Joseph's University | Hawk Hill Volunteer Hub</h1>
+          <p class="text-xs text-emerald-200">Office of Sustainability & Local Community Opportunities • 5600 City Ave, Philadelphia, PA</p>
         </div>
       </div>
       <div class="flex items-center gap-3">
-        <!-- Submit Button launches email to sustainability@sju.edu -->
+        <!-- Direct mailto link to SJU Sustainability Office -->
         <a href="mailto:sustainability@sju.edu?subject=New%20Volunteer%20Opportunity%20Submission&body=Hello%20SJU%20Sustainability%20Office,%0A%0AI%20would%20like%20to%20submit%20the%20following%20volunteer%20opportunity%20for%20the%20Hawk%20Hill%20Dashboard:%0A%0A-%20Event%20Title:%20%0A-%20Organization:%20%0A-%20Date%20and%20Time:%20%0A-%20Location:%20%0A-%20Description:%20%0A-%20Registration/Contact%20Link:%20" 
            class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition flex items-center gap-2 shadow border border-emerald-500">
           <i class="fa-solid fa-envelope"></i> Submit Event / Project
@@ -69,136 +69,89 @@
       <!-- Secondary Category Filters -->
       <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 text-xs">
         <span class="text-slate-500 font-medium uppercase tracking-wider mr-1">Category:</span>
-        <button onclick="setFilterCat('all')" class="cat-btn border border-emerald-600 bg-emerald-50 text-emerald-800 font-semibold px-2.5 py-1 rounded">All Categories</button>
-        <button onclick="setFilterCat('Cleanups')" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded">Trash & River Cleanups</button>
-        <button onclick="setFilterCat('Forestry & Gardening')" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded">Tree Planting & Gardening</button>
-        <button onclick="setFilterCat('Food Waste')" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded">Food Recovery & Composting</button>
-        <button onclick="setFilterCat('Education & Advocacy')" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded">Education & Outreach</button>
+        <button onclick="setFilterCat('all')" id="cat-all" class="cat-btn border border-emerald-600 bg-emerald-50 text-emerald-800 font-semibold px-2.5 py-1 rounded">All Categories</button>
+        <button onclick="setFilterCat('Cleanups')" id="cat-cleanups" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded">Trash & River Cleanups</button>
+        <button onclick="setFilterCat('Forestry & Gardening')" id="cat-forestry" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded">Tree Planting & Gardening</button>
+        <button onclick="setFilterCat('Food Waste')" id="cat-food" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded">Food Recovery & Composting</button>
+        <button onclick="setFilterCat('Education & Advocacy')" id="cat-education" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded">Education & Outreach</button>
       </div>
     </section>
 
     <!-- Opportunities Grid -->
     <section>
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-bold text-slate-800">2026 Sustainability Opportunities</h3>
-        <p class="text-xs text-slate-500" id="results-count">Showing 6 opportunities</p>
+        <h3 class="text-lg font-bold text-slate-800">Sustainability Opportunities</h3>
+        <p class="text-xs text-slate-500" id="results-count">Loading opportunities...</p>
       </div>
       <div id="opportunity-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Javascript dynamically fills this -->
+        <!-- Rendered dynamically via JavaScript -->
       </div>
     </section>
 
   </main>
 
   <script>
-  const mockData = [
-  {
-    id: 1,
-    title: "SJU Community Garden Harvesting",
-    organization: "SJU Community Garden",
-    type: "on-campus",
-    category: "Forestry & Gardening",
-    date: "Intermittent Days and Times",
-    location: "Between Merion Hall and Fine Arts East, Merion Station, PA",
-    description: "Assist with weeding and harvesting vegetables from the garden in support of food security initiatives.",
-    distanceMiles: 0.4,
-    link: "https://docs.google.com/spreadsheets/d/1Qk6LoiE9i2OwqOkW1vHwkuisQeyei5KJpiE5yyQoRw4/edit?usp=drivesdk",
-    tags: ["On Campus", "Produce", "Gardening"],
-    badgeColor: "bg-emerald-100 text-emerald-800"
-  },
-  {
-    id: 2,
-    title: "Barnes Arboretum Horticulture & Plant Stewardship",
-    organization: "Saint Joseph's University (Barnes Arboretum)",
-    type: "on-campus",
-    category: "Forestry & Gardening",
-    date: "Weekly Recurring Workdays • 9:30 AM - 12:30 PM",
-    location: "300 N Latch's Ln, Merion Station, PA (SJU Arboretum)",
-    description: "Support university horticulture staff in weeding, trail mulching, caring for heritage woody plants, and managing invasive species across SJU's 12-acre arboretum.",
-    distanceMiles: 0.6,
-    link: "https://docs.google.com/forms/d/1NaOrZnQemzz4jqqKN8YFOZoyo8g3uHCgjuvKPOj2abM/edit",
-    tags: ["On Campus", "Arboretum", "Gardening"],
-    badgeColor: "bg-emerald-100 text-emerald-800"
-  },
-  {
-    id: 3,
-    title: "Love Your Park Fall Service Weekend",
-    organization: "Fairmount Park Conservancy & Philly Parks & Rec",
-    type: "off-campus",
-    category: "Cleanups",
-    date: "Nov 13-15, 2026 • Morning Shifts (9:00 AM - 12:00 PM)",
-    location: "West Fairmount Park & Centennial District Sites",
-    description: "Join thousands of volunteers across Philly for the annual fall clean-and-green effort planting street trees, cleaning waterways, collecting leaves, and preparing parks for winter.",
-    distanceMiles: 1.4,
-    link: "https://loveyourpark.org/",
-    tags: ["Citywide", "Fall Cleanup", "West Park"],
-    badgeColor: "bg-blue-100 text-blue-800"
-  },
-  {
-    id: 4,
-    title: "Second Saturday Natural Lands Restoration",
-    organization: "Fairmount Park Conservancy",
-    type: "off-campus",
-    category: "Forestry & Gardening",
-    date: "2nd Saturday of Every Month • 10:00 AM - 1:00 PM",
-    location: "Rotating Fairmount Park Sites (Centennial / Chamounix)",
-    description: "Hands-on forest restoration projects tackling invasive porcelain berry and English ivy, planting native saplings, and stabilizing trail edges near the Schuylkill River.",
-    distanceMiles: 1.8,
-    link: "https://loveyourpark.org/volunteer/secondsaturdays",
-    tags: ["Forestry", "Monthly", "Trail Care"],
-    badgeColor: "bg-blue-100 text-blue-800"
-  },
-  {
-    id: 5,
-    title: "Cobbs Creek Watershed Ambassador Cleanup",
-    organization: "Cobbs Creek Park Ambassadors",
-    type: "off-campus",
-    category: "Cleanups",
-    date: "1st & 3rd Saturdays Monthly • 9:00 AM - 11:00 AM",
-    location: "63rd & Market St / Florence Ave & Cobbs Creek Pkwy",
-    description: "Help West Philadelphia neighbors clean up trash and floatables along stream banks and trails to protect Cobbs Creek and downstream Delaware River water quality.",
-    distanceMiles: 2.1,
-    link: "https://cobbscreekparkambassadors.org/join-us/",
-    tags: ["Watershed", "Litter Sweep", "West Philly"],
-    badgeColor: "bg-blue-100 text-blue-800"
-  },
-  {
-    id: 6,
-    title: "StreamKeepers Watershed Water Quality Monitoring",
-    organization: "Lower Merion Conservancy",
-    type: "off-campus",
-    category: "Education & Advocacy",
-    date: "Monthly Field Observations • Flexible Hours",
-    location: "Rolling Hill Park & Mill Creek (1301 Rose Glen Rd)",
-    description: "Track stream bank erosion, riparian plant buffers, stormwater runoff, and aquatic health along Mill Creek and Indian Creek as part of the Delaware River Watershed Initiative.",
-    distanceMiles: 3.2,
-    link: "https://lmconservancy.org/stream-photo-campaign/",
-    tags: ["Citizen Science", "Stream Monitoring", "Water"],
-    badgeColor: "bg-blue-100 text-blue-800"
-  },
-  {
-    id: 7,
-    title: "Sankofa Farm & Tidal Wetland Stewardship",
-    organization: "Bartram's Garden",
-    type: "off-campus",
-    category: "Forestry & Gardening",
-    date: "Thursdays & Saturdays • 9:30 AM - 12:30 PM",
-    location: "5400 Lindbergh Blvd, Philadelphia, PA",
-    description: "Volunteer with farm and horticulture staff on seasonal outdoor tasks: weeding, harvesting, composting, and clearing litter along the tidal Schuylkill riverfront.",
-    distanceMiles: 6.2,
-    link: "https://www.bartramsgarden.org/volunteer/",
-    tags: ["Urban Ag", "Community Farm", "Schuylkill"],
-    badgeColor: "bg-blue-100 text-blue-800"
-  }
-];
+    // Fallback data in case sju_dashboard_opportunities.json is unavailable or loading locally
+    const fallbackData = [
+      {
+        id: 1,
+        title: "SJU Community Garden Harvesting",
+        organization: "SJU Community Garden",
+        type: "on-campus",
+        category: "Forestry & Gardening",
+        date: "Intermittent Days and Times",
+        location: "Between Merion Hall and Fine Arts East, Merion Station, PA",
+        description: "Assist with weeding and harvesting vegetables from the garden in support of food security initiatives.",
+        distanceMiles: 0.4,
+        link: "https://docs.google.com/spreadsheets/d/1Qk6LoiE9i2OwqOkW1vHwkuisQeyei5KJpiE5yyQoRw4/edit?usp=drivesdk",
+        tags: ["On Campus", "Produce", "Gardening"],
+        badgeColor: "bg-emerald-100 text-emerald-800"
+      },
+      {
+        id: 2,
+        title: "Barnes Arboretum Horticulture & Plant Stewardship",
+        organization: "Saint Joseph's University (Barnes Arboretum)",
+        type: "on-campus",
+        category: "Forestry & Gardening",
+        date: "Weekly Recurring Workdays • 9:30 AM - 12:30 PM",
+        location: "300 N Latch's Ln, Merion Station, PA (SJU Arboretum)",
+        description: "Support university horticulture staff in weeding, trail mulching, caring for heritage woody plants, and managing invasive species across SJU's 12-acre arboretum.",
+        distanceMiles: 0.6,
+        link: "https://docs.google.com/forms/d/1NaOrZnQemzz4jqqKN8YFOZoyo8g3uHCgjuvKPOj2abM/edit",
+        tags: ["On Campus", "Arboretum", "Gardening"],
+        badgeColor: "bg-emerald-100 text-emerald-800"
+      }
+    ];
 
+    let opportunitiesData = [];
     let currentLocFilter = 'all';
     let currentCatFilter = 'all';
 
+    // Fetch dynamic JSON data generated by GitHub Actions
+    async function loadOpportunities() {
+      try {
+        // Timestamp prevents aggressive browser caching
+        const response = await fetch(`sju_dashboard_opportunities.json?t=${new Date().getTime()}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        opportunitiesData = (Array.isArray(data) && data.length > 0) ? data : fallbackData;
+      } catch (err) {
+        console.warn("Could not load sju_dashboard_opportunities.json. Displaying fallback dataset.", err);
+        opportunitiesData = fallbackData;
+      } finally {
+        renderCards(opportunitiesData);
+      }
+    }
+
     function renderCards(data) {
       const container = document.getElementById('opportunity-cards');
-      document.getElementById('results-count').innerText = `Showing ${data.length} opportunities`;
+      const countEl = document.getElementById('results-count');
+      if (countEl) countEl.innerText = `Showing ${data.length} opportunities`;
       
+      if (!container) return;
+
       if (data.length === 0) {
         container.innerHTML = `
           <div class="col-span-full py-12 text-center text-slate-400 bg-white rounded-xl border border-dashed border-slate-200">
@@ -214,12 +167,12 @@
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between overflow-hidden">
           <div class="p-5 space-y-3">
             <div class="flex items-center justify-between gap-2">
-              <span class="text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${item.badgeColor}">
+              <span class="text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${item.badgeColor || (item.type === 'on-campus' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800')}">
                 <i class="fa-solid ${item.type === 'on-campus' ? 'fa-building-columns' : 'fa-map-location-dot'} mr-1"></i>
                 ${item.type === 'on-campus' ? 'On-Campus' : 'Off-Campus'}
               </span>
               <span class="text-xs font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
-                <i class="fa-solid fa-location-dot mr-1"></i> ${item.distanceMiles === 0 ? 'Hawk Hill' : item.distanceMiles + ' mi away'}
+                <i class="fa-solid fa-location-dot mr-1"></i> ${item.distanceMiles === 0 ? 'Hawk Hill' : (item.distanceMiles || 0) + ' mi away'}
               </span>
             </div>
 
@@ -234,15 +187,15 @@
             <p class="text-xs text-slate-600 line-clamp-3">${item.description}</p>
 
             <div class="flex flex-wrap gap-1 pt-1">
-              ${item.tags.map(t => `<span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${t}</span>`).join('')}
+              ${(item.tags || []).map(t => `<span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${t}</span>`).join('')}
             </div>
           </div>
 
           <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
             <span class="text-xs text-slate-500 font-medium">${item.category}</span>
-           <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="bg-emerald-800 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition shadow-sm inline-flex items-center gap-1.5">
-  Sign Up / RSVP <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-</a>
+            <a href="${item.link || item.registrationUrl || '#'}" target="_blank" rel="noopener noreferrer" class="bg-emerald-800 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition shadow-sm inline-flex items-center gap-1.5">
+              Sign Up / RSVP <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            </a>
           </div>
         </div>
       `).join('');
@@ -250,13 +203,13 @@
 
     function filterOpportunities() {
       const search = document.getElementById('search-input').value.toLowerCase();
-      const filtered = mockData.filter(item => {
+      const filtered = opportunitiesData.filter(item => {
         const matchesLoc = currentLocFilter === 'all' || item.type === currentLocFilter;
         const matchesCat = currentCatFilter === 'all' || item.category === currentCatFilter;
-        const matchesSearch = item.title.toLowerCase().includes(search) || 
-                              item.description.toLowerCase().includes(search) || 
-                              item.organization.toLowerCase().includes(search) ||
-                              item.tags.some(t => t.toLowerCase().includes(search));
+        const matchesSearch = (item.title && item.title.toLowerCase().includes(search)) || 
+                              (item.description && item.description.toLowerCase().includes(search)) || 
+                              (item.organization && item.organization.toLowerCase().includes(search)) ||
+                              ((item.tags || []).some(t => t.toLowerCase().includes(search)));
         return matchesLoc && matchesCat && matchesSearch;
       });
       renderCards(filtered);
@@ -267,24 +220,25 @@
       document.querySelectorAll('.filter-loc-btn').forEach(btn => {
         btn.className = 'filter-loc-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-1.5 rounded-full text-xs font-semibold';
       });
-      document.getElementById(`loc-${type}`).className = 'filter-loc-btn bg-emerald-800 text-white px-3.5 py-1.5 rounded-full text-xs font-semibold';
+      const activeBtn = document.getElementById(`loc-${type}`);
+      if (activeBtn) activeBtn.className = 'filter-loc-btn bg-emerald-800 text-white px-3.5 py-1.5 rounded-full text-xs font-semibold';
       filterOpportunities();
     }
 
     function setFilterCat(cat) {
       currentCatFilter = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.className = 'cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded';
+      });
+      const eventTarget = window.event && window.event.target;
+      if (eventTarget) {
+        eventTarget.className = 'cat-btn border border-emerald-600 bg-emerald-50 text-emerald-800 font-semibold px-2.5 py-1 rounded';
+      }
       filterOpportunities();
     }
 
-    function signUp(id) {
-      const btn = document.getElementById(`btn-${id}`);
-      btn.innerHTML = `<i class="fa-solid fa-check mr-1"></i> Registered!`;
-      btn.className = "bg-emerald-950 text-white text-xs font-semibold px-4 py-1.5 rounded-lg cursor-default";
-      btn.disabled = true;
-    }
-
-    // Initial Render
-    renderCards(mockData);
+    // Initialize data loading on page ready
+    document.addEventListener('DOMContentLoaded', loadOpportunities);
   </script>
 </body>
 </html>
