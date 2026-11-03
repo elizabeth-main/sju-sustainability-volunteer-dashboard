@@ -18,7 +18,7 @@
           }
         }
       }
-    }
+    };
   </script>
 </head>
 <body class="bg-slate-50 min-h-screen font-sans text-slate-800">
@@ -37,4 +37,43 @@
       </div>
       <div class="flex items-center gap-3">
         <!-- Direct mailto link to SJU Sustainability Office -->
-        <a href="mailto:sustainability@sju.edu?subject=New%20Volunteer%20Opportunity%20Submission&body=Hello%20SJU%20Sustainability%20Office,%0A%0AI%20would%20like%20to%20submit%20the%20following%20volunteer%20opportunity%20for%20the
+        <a href="mailto:sustainability@sju.edu?subject=New%20Volunteer%20Opportunity%20Submission&body=Hello%20SJU%20Sustainability%20Office,%0A%0AI%20would%20like%20to%20submit%20the%20following%20volunteer%20opportunity%20for%20the%20Hawk%20Hill%20Dashboard:%0A%0A-%20Event%20Title:%20%0A-%20Organization:%20%0A-%20Date%20and%20Time:%20%0A-%20Location:%20%0A-%20Description:%20%0A-%20Registration/Contact%20Link:%20" 
+           class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition flex items-center gap-2 shadow border border-emerald-500">
+          <i class="fa-solid fa-envelope"></i> Submit Event / Project
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+    <!-- Filter & Search Controls -->
+    <section class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+      <div class="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4">
+        
+        <!-- Search bar & Sort Controls -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-grow max-w-2xl">
+          <div class="relative flex-grow">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+            <input type="text" id="search-input" onkeyup="filterOpportunities()" placeholder="Search title, organization, or keyword..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+          </div>
+
+          <!-- Sort Dropdown -->
+          <div class="flex items-center gap-2">
+            <label for="sort-select" class="text-slate-500 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Sort:</label>
+            <select id="sort-select" onchange="setSortOrder(this.value)" class="border border-slate-300 rounded-lg px-2.5 py-2 text-xs text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 cursor-pointer">
+              <option value="default">Default Order</option>
+              <option value="date-asc">Date (Earliest First)</option>
+              <option value="date-desc">Date (Latest First)</option>
+              <option value="discrete-only">Single-Date Events Only</option>
+              <option value="recurring-only">Recurring / Ongoing Only</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Location Filter Chips -->
+        <div class="flex flex-wrap items-center gap-2 text-sm">
+          <span class="text-slate-500 font-medium text-xs uppercase tracking-wider mr-1">Location:</span>
+          <button onclick="setFilterLocation('all')" id="loc-all" class="filter-loc-btn bg-emerald-800 text-white px-3.5 py-1.5 rounded-full text-xs font-semibold transition">All</button>
+          <button onclick="setFilterLocation('on-campus')" id="loc-on-campus" class="filter-loc-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-1.5 rounded-full text-xs font-semibold transition">On-Campus (0.0 mi)</button>
+          <button onclick="setFilterLocation('off-campus')" id="
