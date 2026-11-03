@@ -1,0 +1,48 @@
+name: Nightly Sustainability Feed Sync
+
+on:
+  schedule:
+    # Runs daily at midnight UTC (7:00 PM EST)
+    - cron: '0 0 * * *'
+  # Allows you to click a button and run it manually whenever you want
+  workflow_dispatch:
+
+jobs:
+  update-opportunities:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install google-genai feedparser icalendar requests geopy
+
+      - name: Run Feed Parser Pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python sync_sju_sustainability_feeds.py
+
+      - name: Commit and Push Updated Events
+        run: |
+          git config --global user.name "SJU Sustainability Bot"
+          git config --global user.email "sustainability-bot@users.noreply.github.com"
+          
+          git add sju_dashboard_opportunities.json
+          if git diff --staged --quiet; then
+            echo "No feed changes or new events detected today."
+          else
+            git commit -m "chore: auto-update volunteer opportunities [skip ci]"
+            git push
+          fi
