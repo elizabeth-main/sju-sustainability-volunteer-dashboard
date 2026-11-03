@@ -260,19 +260,50 @@
       `).join('');
     }
 
-    function filterOpportunities() {
-      const search = document.getElementById('search-input').value.toLowerCase();
-      const filtered = mockData.filter(item => {
-        const matchesLoc = currentLocFilter === 'all' || item.type === currentLocFilter;
-        const matchesCat = currentCatFilter === 'all' || item.category === currentCatFilter;
-        const matchesSearch = item.title.toLowerCase().includes(search) || 
-                              item.description.toLowerCase().includes(search) || 
-                              item.organization.toLowerCase().includes(search) ||
-                              item.tags.some(t => t.toLowerCase().includes(search));
-        return matchesLoc && matchesCat && matchesSearch;
-      });
-      renderCards(filtered);
-    }
+let currentSort = 'default';
+
+function setSortOrder(order) {
+  currentSort = order;
+  filterOpportunities();
+}
+
+function filterOpportunities() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  
+  // 1. Apply category, location, and search filters
+  let filtered = opportunitiesData.filter(item => {
+    const matchesLoc = currentLocFilter === 'all' || item.type === currentLocFilter;
+    const matchesCat = currentCatFilter === 'all' || item.category === currentCatFilter;
+    const matchesSearch = (item.title && item.title.toLowerCase().includes(search)) || 
+                          (item.description && item.description.toLowerCase().includes(search)) || 
+                          (item.organization && item.organization.toLowerCase().includes(search)) ||
+                          ((item.tags || []).some(t => t.toLowerCase().includes(search)));
+    return matchesLoc && matchesCat && matchesSearch;
+  });
+
+  // 2. Apply date sorting / filtering
+  if (currentSort === 'discrete-only') {
+    filtered = filtered.filter(item => item.isoDate);
+    filtered.sort((a, b) => new Date(a.isoDate) - new Date(b.isoDate));
+  } else if (currentSort === 'recurring-only') {
+    filtered = filtered.filter(item => !item.isoDate);
+  } else if (currentSort === 'date-asc') {
+    filtered.sort((a, b) => {
+      // Push recurring/ongoing events with no discrete date to the bottom
+      if (!a.isoDate) return 1;
+      if (!b.isoDate) return -1;
+      return new Date(a.isoDate) - new Date(b.isoDate);
+    });
+  } else if (currentSort === 'date-desc') {
+    filtered.sort((a, b) => {
+      if (!a.isoDate) return 1;
+      if (!b.isoDate) return -1;
+      return new Date(b.isoDate) - new Date(a.isoDate);
+    });
+  }
+
+  renderCards(filtered);
+}
 
     function setFilterLocation(type) {
       currentLocFilter = type;
