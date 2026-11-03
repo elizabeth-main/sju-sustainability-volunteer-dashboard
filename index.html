@@ -36,7 +36,6 @@
         </div>
       </div>
       <div class="flex items-center gap-3">
-        <!-- Direct mailto link to SJU Sustainability Office -->
         <a href="mailto:sustainability@sju.edu?subject=New%20Volunteer%20Opportunity%20Submission&body=Hello%20SJU%20Sustainability%20Office,%0A%0AI%20would%20like%20to%20submit%20the%20following%20volunteer%20opportunity%20for%20the%20Hawk%20Hill%20Dashboard:%0A%0A-%20Event%20Title:%20%0A-%20Organization:%20%0A-%20Date%20and%20Time:%20%0A-%20Location:%20%0A-%20Description:%20%0A-%20Registration/Contact%20Link:%20" 
            class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition flex items-center gap-2 shadow border border-emerald-500">
           <i class="fa-solid fa-envelope"></i> Submit Event / Project
@@ -55,7 +54,7 @@
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-grow max-w-2xl">
           <div class="relative flex-grow">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
-            <input type="text" id="search-input" onkeyup="filterOpportunities()" placeholder="Search title, organization, or keyword..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+            <input type="text" id="search-input" oninput="filterOpportunities()" placeholder="Search title, organization, or keyword..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
           </div>
 
           <!-- Sort Dropdown -->
@@ -76,4 +75,324 @@
           <span class="text-slate-500 font-medium text-xs uppercase tracking-wider mr-1">Location:</span>
           <button onclick="setFilterLocation('all')" id="loc-all" class="filter-loc-btn bg-emerald-800 text-white px-3.5 py-1.5 rounded-full text-xs font-semibold transition">All</button>
           <button onclick="setFilterLocation('on-campus')" id="loc-on-campus" class="filter-loc-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-1.5 rounded-full text-xs font-semibold transition">On-Campus (0.0 mi)</button>
-          <button onclick="setFilterLocation('off-campus')" id="
+          <button onclick="setFilterLocation('off-campus')" id="loc-off-campus" class="filter-loc-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Off-Campus (&le;10 mi)</button>
+        </div>
+      </div>
+
+      <!-- Secondary Category Filters -->
+      <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 text-xs">
+        <span class="text-slate-500 font-medium uppercase tracking-wider mr-1">Category:</span>
+        <button onclick="setFilterCat('all', this)" id="cat-btn-all" class="cat-btn border border-emerald-600 bg-emerald-50 text-emerald-800 font-semibold px-2.5 py-1 rounded transition">All Categories</button>
+        <button onclick="setFilterCat('Cleanups', this)" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded transition">Trash & River Cleanups</button>
+        <button onclick="setFilterCat('Forestry & Gardening', this)" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded transition">Tree Planting & Gardening</button>
+        <button onclick="setFilterCat('Food Waste', this)" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded transition">Food Recovery & Composting</button>
+        <button onclick="setFilterCat('Education & Advocacy', this)" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded transition">Education & Outreach</button>
+      </div>
+    </section>
+
+    <!-- Opportunities Grid -->
+    <section>
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-slate-800">Sustainability Opportunities</h3>
+        <p class="text-xs text-slate-500" id="results-count">Showing opportunities...</p>
+      </div>
+      <div id="opportunity-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Javascript dynamically renders cards here -->
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const fallbackData = [
+      {
+        id: 1,
+        title: "SJU Community Garden Harvesting",
+        organization: "SJU Community Garden",
+        type: "on-campus",
+        category: "Forestry & Gardening",
+        date: "Intermittent Days and Times",
+        isoDate: null,
+        location: "Between Merion Hall and Fine Arts East, Merion Station, PA",
+        description: "Assist with weeding and harvesting vegetables from the garden in support of food security initiatives.",
+        distanceMiles: 0.4,
+        link: "https://docs.google.com/spreadsheets/d/1Qk6LoiE9i2OwqOkW1vHwkuisQeyei5KJpiE5yyQoRw4/edit?usp=drivesdk",
+        tags: ["On Campus", "Produce", "Gardening"],
+        badgeColor: "bg-emerald-100 text-emerald-800"
+      },
+      {
+        id: 2,
+        title: "Barnes Arboretum Horticulture & Plant Stewardship",
+        organization: "Saint Joseph's University (Barnes Arboretum)",
+        type: "on-campus",
+        category: "Forestry & Gardening",
+        date: "Weekly Recurring Workdays • 9:30 AM - 12:30 PM",
+        isoDate: null,
+        location: "300 N Latch's Ln, Merion Station, PA (SJU Arboretum)",
+        description: "Support university horticulture staff in weeding, trail mulching, caring for heritage woody plants, and managing invasive species across SJU's 12-acre arboretum.",
+        distanceMiles: 0.6,
+        link: "https://docs.google.com/forms/d/1NaOrZnQemzz4jqqKN8YFOZoyo8g3uHCgjuvKPOj2abM/edit",
+        tags: ["On Campus", "Arboretum", "Gardening"],
+        badgeColor: "bg-emerald-100 text-emerald-800"
+      },
+      {
+        id: 3,
+        title: "Love Your Park Fall Service Weekend",
+        organization: "Fairmount Park Conservancy & Philly Parks & Rec",
+        type: "off-campus",
+        category: "Cleanups",
+        date: "Nov 13-15, 2026 • Morning Shifts (9:00 AM - 12:00 PM)",
+        isoDate: "2026-11-13",
+        location: "West Fairmount Park & Centennial District Sites",
+        description: "Join thousands of volunteers across Philly for the annual fall clean-and-green effort planting street trees, cleaning waterways, collecting leaves, and preparing parks for winter.",
+        distanceMiles: 1.4,
+        link: "https://loveyourpark.org/",
+        tags: ["Citywide", "Fall Cleanup", "West Park"],
+        badgeColor: "bg-blue-100 text-blue-800"
+      },
+      {
+        id: 4,
+        title: "Second Saturday Natural Lands Restoration",
+        organization: "Fairmount Park Conservancy",
+        type: "off-campus",
+        category: "Forestry & Gardening",
+        date: "2nd Saturday of Every Month • 10:00 AM - 1:00 PM",
+        isoDate: null,
+        location: "Rotating Fairmount Park Sites (Centennial / Chamounix)",
+        description: "Hands-on forest restoration projects tackling invasive porcelain berry and English ivy, planting native saplings, and stabilizing trail edges near the Schuylkill River.",
+        distanceMiles: 1.8,
+        link: "https://loveyourpark.org/volunteer/secondsaturdays",
+        tags: ["Forestry", "Monthly", "Trail Care"],
+        badgeColor: "bg-blue-100 text-blue-800"
+      },
+      {
+        id: 5,
+        title: "Cobbs Creek Watershed Ambassador Cleanup",
+        organization: "Cobbs Creek Park Ambassadors",
+        type: "off-campus",
+        category: "Cleanups",
+        date: "1st & 3rd Saturdays Monthly • 9:00 AM - 11:00 AM",
+        isoDate: null,
+        location: "63rd & Market St / Florence Ave & Cobbs Creek Pkwy",
+        description: "Help West Philadelphia neighbors clean up trash and floatables along stream banks and trails to protect Cobbs Creek and downstream Delaware River water quality.",
+        distanceMiles: 2.1,
+        link: "https://cobbscreekparkambassadors.org/join-us/",
+        tags: ["Watershed", "Litter Sweep", "West Philly"],
+        badgeColor: "bg-blue-100 text-blue-800"
+      },
+      {
+        id: 6,
+        title: "StreamKeepers Watershed Water Quality Monitoring",
+        organization: "Lower Merion Conservancy",
+        type: "off-campus",
+        category: "Education & Advocacy",
+        date: "Monthly Field Observations • Flexible Hours",
+        isoDate: null,
+        location: "Rolling Hill Park & Mill Creek (1301 Rose Glen Rd)",
+        description: "Track stream bank erosion, riparian plant buffers, stormwater runoff, and aquatic health along Mill Creek and Indian Creek as part of the Delaware River Watershed Initiative.",
+        distanceMiles: 3.2,
+        link: "https://lmconservancy.org/stream-photo-campaign/",
+        tags: ["Citizen Science", "Stream Monitoring", "Water"],
+        badgeColor: "bg-blue-100 text-blue-800"
+      },
+      {
+        id: 7,
+        title: "Sankofa Farm & Tidal Wetland Stewardship",
+        organization: "Bartram's Garden",
+        type: "off-campus",
+        category: "Forestry & Gardening",
+        date: "Thursdays & Saturdays • 9:30 AM - 12:30 PM",
+        isoDate: null,
+        location: "5400 Lindbergh Blvd, Philadelphia, PA",
+        description: "Volunteer with farm and horticulture staff on seasonal outdoor tasks: weeding, harvesting, composting, and clearing litter along the tidal Schuylkill riverfront.",
+        distanceMiles: 6.2,
+        link: "https://www.bartramsgarden.org/volunteer/",
+        tags: ["Urban Ag", "Community Farm", "Schuylkill"],
+        badgeColor: "bg-blue-100 text-blue-800"
+      }
+    ];
+
+    // Seed immediately with fallback data so the page renders with zero delay
+    let opportunitiesData = fallbackData;
+    let currentLocFilter = 'all';
+    let currentCatFilter = 'all';
+    let currentSort = 'default';
+
+    function getEventTimestamp(item) {
+      if (item.isoDate) {
+        const t = new Date(item.isoDate).getTime();
+        if (!isNaN(t)) return t;
+      }
+      if (item.date) {
+        const text = item.date.toLowerCase();
+        if (text.includes("week") || text.includes("month") || text.includes("intermittent") || text.includes("every") || text.includes("recurring")) {
+          return null;
+        }
+        const primaryDate = item.date.split("•")[0].split("-")[0].replace(/^[a-zA-Z]+,\s*/, '').trim();
+        const parsed = Date.parse(primaryDate);
+        if (!isNaN(parsed)) return parsed;
+      }
+      return null;
+    }
+
+    function renderCards(data) {
+      const container = document.getElementById('opportunity-cards');
+      const countEl = document.getElementById('results-count');
+      if (countEl) countEl.innerText = `Showing ${data.length} opportunities`;
+      
+      if (!container) return;
+
+      if (!data || data.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-400 bg-white rounded-xl border border-dashed border-slate-200">
+            <i class="fa-solid fa-leaf text-3xl mb-2 text-slate-300"></i>
+            <p class="font-semibold text-slate-600">No opportunities match your current filters.</p>
+            <p class="text-xs">Try adjusting your search, sort, or category filters above.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = data.map(item => {
+        const isDiscrete = getEventTimestamp(item) !== null;
+        return `
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between overflow-hidden">
+            <div class="p-5 space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${item.badgeColor || (item.type === 'on-campus' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800')}">
+                  <i class="fa-solid ${item.type === 'on-campus' ? 'fa-building-columns' : 'fa-map-location-dot'} mr-1"></i>
+                  ${item.type === 'on-campus' ? 'On-Campus' : 'Off-Campus'}
+                </span>
+                
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-medium px-2 py-0.5 rounded ${isDiscrete ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-slate-100 text-slate-600'}">
+                    <i class="fa-regular ${isDiscrete ? 'fa-calendar' : 'fa-arrows-rotate'} text-[10px] mr-1"></i>
+                    ${isDiscrete ? 'One-Time' : 'Ongoing'}
+                  </span>
+                  <span class="text-xs font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                    <i class="fa-solid fa-location-dot mr-1"></i> ${item.distanceMiles === 0 ? 'Hawk Hill' : (item.distanceMiles || 0) + ' mi'}
+                  </span>
+                </div>
+              </div>
+
+              <h4 class="text-base font-bold text-slate-800 hover:text-emerald-700 transition cursor-pointer">${item.title}</h4>
+              <p class="text-xs font-semibold text-slate-500"><i class="fa-solid fa-users text-slate-400 mr-1"></i> ${item.organization}</p>
+              
+              <div class="space-y-1 text-xs text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                <p><i class="fa-solid fa-calendar-day text-emerald-700 w-4"></i> ${item.date}</p>
+                <p><i class="fa-solid fa-location-dot text-emerald-700 w-4"></i> ${item.location}</p>
+              </div>
+
+              <p class="text-xs text-slate-600 line-clamp-3">${item.description}</p>
+
+              <div class="flex flex-wrap gap-1 pt-1">
+                ${(item.tags || []).map(t => `<span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${t}</span>`).join('')}
+              </div>
+            </div>
+
+            <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-xs text-slate-500 font-medium">${item.category}</span>
+              <a href="${item.link || item.registrationUrl || '#'}" target="_blank" rel="noopener noreferrer" class="bg-emerald-800 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition shadow-sm inline-flex items-center gap-1.5">
+                Sign Up / RSVP <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function setSortOrder(order) {
+      currentSort = order;
+      filterOpportunities();
+    }
+
+    function filterOpportunities() {
+      const searchInput = document.getElementById('search-input');
+      const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
+      
+      let filtered = opportunitiesData.filter(item => {
+        const matchesLoc = currentLocFilter === 'all' || item.type === currentLocFilter;
+        const matchesCat = currentCatFilter === 'all' || item.category === currentCatFilter;
+        const matchesSearch = !search ||
+          (item.title && item.title.toLowerCase().includes(search)) || 
+          (item.description && item.description.toLowerCase().includes(search)) || 
+          (item.organization && item.organization.toLowerCase().includes(search)) ||
+          ((item.tags || []).some(t => t.toLowerCase().includes(search)));
+        return matchesLoc && matchesCat && matchesSearch;
+      });
+
+      if (currentSort === 'discrete-only') {
+        filtered = filtered.filter(item => getEventTimestamp(item) !== null);
+        filtered.sort((a, b) => getEventTimestamp(a) - getEventTimestamp(b));
+      } 
+      else if (currentSort === 'recurring-only') {
+        filtered = filtered.filter(item => getEventTimestamp(item) === null);
+      } 
+      else if (currentSort === 'date-asc') {
+        filtered.sort((a, b) => {
+          const timeA = getEventTimestamp(a);
+          const timeB = getEventTimestamp(b);
+          if (timeA === null && timeB === null) return 0;
+          if (timeA === null) return 1;
+          if (timeB === null) return -1;
+          return timeA - timeB;
+        });
+      } 
+      else if (currentSort === 'date-desc') {
+        filtered.sort((a, b) => {
+          const timeA = getEventTimestamp(a);
+          const timeB = getEventTimestamp(b);
+          if (timeA === null && timeB === null) return 0;
+          if (timeA === null) return 1;
+          if (timeB === null) return -1;
+          return timeB - timeA;
+        });
+      }
+
+      renderCards(filtered);
+    }
+
+    function setFilterLocation(type) {
+      currentLocFilter = type;
+      document.querySelectorAll('.filter-loc-btn').forEach(btn => {
+        btn.className = 'filter-loc-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-1.5 rounded-full text-xs font-semibold transition';
+      });
+      const activeBtn = document.getElementById(`loc-${type}`);
+      if (activeBtn) activeBtn.className = 'filter-loc-btn bg-emerald-800 text-white px-3.5 py-1.5 rounded-full text-xs font-semibold transition';
+      filterOpportunities();
+    }
+
+    function setFilterCat(cat, btnElement) {
+      currentCatFilter = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.className = 'cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded transition';
+      });
+      if (btnElement) {
+        btnElement.className = 'cat-btn border border-emerald-600 bg-emerald-50 text-emerald-800 font-semibold px-2.5 py-1 rounded transition';
+      }
+      filterOpportunities();
+    }
+
+    async function loadOpportunities() {
+      try {
+        const response = await fetch(`sju_dashboard_opportunities.json?t=${new Date().getTime()}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (Array.isArray(data) && data.length > 0) {
+            opportunitiesData = data;
+            filterOpportunities();
+          }
+        }
+      } catch (err) {
+        console.warn("Using fallback local data due to fetch error:", err);
+      }
+    }
+
+    // 1. Initial render happens immediately without waiting for events or network
+    filterOpportunities();
+
+    // 2. Background update fetches fresh JSON if available
+    loadOpportunities();
+  </script>
+</body>
+</html>
