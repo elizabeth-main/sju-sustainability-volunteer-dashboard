@@ -77,6 +77,18 @@
       </div>
     </section>
 
+    <!-- Sort & View Controls -->
+<div class="flex items-center gap-2 text-xs">
+  <label for="sort-select" class="text-slate-500 font-semibold uppercase tracking-wider">Sort By:</label>
+  <select id="sort-select" onchange="setSortOrder(this.value)" class="border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600">
+    <option value="default">Default Order</option>
+    <option value="date-asc">Date (Earliest to Latest)</option>
+    <option value="date-desc">Date (Latest to Earliest)</option>
+    <option value="discrete-only">Single-Date Events Only</option>
+    <option value="recurring-only">Recurring / Ongoing Only</option>
+  </select>
+</div>
+
     <!-- Opportunities Grid -->
     <section>
       <div class="flex justify-between items-center mb-4">
