@@ -203,7 +203,8 @@ def process_and_structure_events(raw_events, starting_id=100):
            - "organization": Partner name
            - "type": "on-campus" if held at SJU/Hawk Hill, otherwise "off-campus"
            - "category": One of ["Cleanups", "Forestry & Gardening", "Food Waste", "Education & Advocacy"]
-           - "date": Formatted human-readable date & time string
+           - "date": Human-readable date string (e.g. "Sat, Nov 14, 2026 • 9am-12pm")
+           - "isoDate": "YYYY-MM-DD" if this event happens on a single specific calendar date. If it is weekly, monthly, or recurring/ongoing, set "isoDate": null.
            - "location": Specific venue or meeting point
            - "description": 2-sentence summary tailored for student volunteers
            - "tags": Array of 3 short relevant topic tags
