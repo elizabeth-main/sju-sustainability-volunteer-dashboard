@@ -39,6 +39,54 @@ FEEDS_TO_SCRAPE = [
         "url": "https://sju.edu/events/ical",
         "default_lat": HAWK_HILL_LAT,
         "default_lon": HAWK_HILL_LON
+    },
+    {
+        "name": "Lower Merion Conservancy",
+        "type": "ical",
+        # The Events Calendar plugin iCal export for Mill Creek & Lower Merion workdays (~3.2 mi)
+        "url": "https://lmconservancy.org/events/?ical=1",
+        "default_lat": 40.0351,
+        "default_lon": -75.2782
+    },
+    {
+        "name": "Schuylkill Center for Environmental Education",
+        "type": "ical",
+        # Forest restoration, bird counts, and trail maintenance in Upper Roxborough (~5.5 mi)
+        "url": "https://www.schuylkillcenter.org/events/?ical=1",
+        "default_lat": 40.0619,
+        "default_lon": -75.2478
+    },
+    {
+        "name": "Friends of the Wissahickon (FOW)",
+        "type": "ical",
+        # Trail cleanups, erosion control, and invasive species sweeps in Wissahickon Valley Park (~6.1 mi)
+        "url": "https://fow.org/events/?ical=1",
+        "default_lat": 40.0392,
+        "default_lon": -75.2045
+    },
+    {
+        "name": "John Heinz National Wildlife Refuge at Tinicum",
+        "type": "rss",
+        # USFWS public updates and volunteer marsh cleanup events in Southwest Philly (~8.5 mi)
+        "url": "https://www.fws.gov/refuge/john-heinz-tinicum/rss.xml",
+        "default_lat": 39.8891,
+        "default_lon": -75.2575
+    },
+    {
+        "name": "Pennsylvania Horticultural Society (PHS)",
+        "type": "rss",
+        # Tree Tenders plantings, public garden prep, and urban agriculture across Philly (~5.2 mi)
+        "url": "https://phsonline.org/feed",
+        "default_lat": 39.9537,
+        "default_lon": -75.1742
+    },
+    {
+        "name": "Overbrook Environmental Education Center (OEEC)",
+        "type": "rss",
+        # Environmental justice, urban farming, and neighborhood cleanups adjacent to Hawk Hill (~1.1 mi)
+        "url": "https://overbrookcenter.net/feed/",
+        "default_lat": 39.9836,
+        "default_lon": -75.2443
     }
 ]
 
