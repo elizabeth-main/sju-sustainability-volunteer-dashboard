@@ -107,27 +107,148 @@ def calculate_distance_miles(lat1, lon1, lat2, lon2):
 # -------------------------------------------------------------------
 # 3. FEED FETCHERS (RSS & iCal)
 # -------------------------------------------------------------------
-def fetch_rss_events(feed_info):
-    raw_entries = []
-    try:
-        parsed_feed = feedparser.parse(feed_info["url"])
-        for entry in parsed_feed.entries[:10]:
-            raw_entries.append({
-                "source_org": feed_info["name"],
-                "raw_title": entry.get("title", ""),
-                "raw_text": entry.get("summary", "") or entry.get("description", ""),
-                "link": entry.get("link", ""),
-                "lat": feed_info["default_lat"],
-                "lon": feed_info["default_lon"]
-            })
-    except Exception as e:
-        print(f"⚠️ Warning: Failed to fetch RSS feed for {feed_info['name']}: {e}")
-    return raw_entries
-
 def fetch_ical_events(feed_info):
     raw_entries = []
     try:
         response = requests.get(feed_info["url"], timeout=10)
         if response.status_code == 200:
             cal = Calendar.from_ical(response.content)
-            for component in cal.walk('vevent
+            for component in cal.walk('vevent'):
+                summary = str(component.get('summary', ''))
+                description = str(component.get('description', ''))
+                location = str(component.get('location', ''))
+                start_time = component.get('dtstart')
+                
+                raw_entries.append({
+                    "source_org": feed_info["name"],
+                    "raw_title": summary,
+                    "raw_text": f"Date/Time: {start_time.dt if start_time else 'TBD'}. Location: {location}. Details: {description}",
+                    "link": feed_info["url"],
+                    "lat": feed_info["default_lat"],
+                    "lon": feed_info["default_lon"]
+                })
+    except Exception as e:
+        print(f"⚠️ Warning: Failed to fetch iCal feed for {feed_info['name']}: {e}")
+    return raw_entries
+
+# -------------------------------------------------------------------
+# 4. LOAD MANUAL OPPORTUNITIES
+# -------------------------------------------------------------------
+def load_manual_events(filename="manual_opportunities.json"):
+    """Loads manually maintained events if the file exists."""
+    if os.path.exists(filename):
+        try:
+            with open(filename, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    print(f"📋 Loaded {len(data)} manual opportunities from {filename}")
+                    return data
+        except Exception as e:
+            print(f"⚠️ Error reading manual events from {filename}: {e}")
+    else:
+        print(f"ℹ️ {filename} not found. Proceeding with feed items only.")
+    return []
+
+# -------------------------------------------------------------------
+# 5. GEMINI AI PARSER & RELEVANCE FILTER
+# -------------------------------------------------------------------
+def process_and_structure_events(raw_events, starting_id=100):
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        print("⚠️ Warning: GEMINI_API_KEY environment variable is not set. Skipping AI parsing.")
+        return []
+
+    client = genai.Client()
+    processed_opportunities = []
+
+    print(f"\n🔄 Evaluating {len(raw_events)} raw feed items with Gemini AI...\n")
+
+    for idx, item in enumerate(raw_events, start=starting_id):
+        dist_miles = calculate_distance_miles(HAWK_HILL_LAT, HAWK_HILL_LON, item["lat"], item["lon"])
+        
+        # Enforce strict 10-mile radius gate
+        if dist_miles > MAX_RADIUS_MILES:
+            print(f"❌ Skipped #{idx}: Exceeds 10-mile radius ({round(dist_miles, 1)} miles away)")
+            continue
+
+        prompt = f"""
+        You are an AI data engineer for Saint Joseph's University Sustainability Dashboard (Hawk Hill Campus).
+        Examine the following raw feed item from {item['source_org']}:
+
+        Title: "{item['raw_title']}"
+        Text Content: "{item['raw_text']}"
+
+        Task:
+        1. Determine if this event is related to environmental sustainability or volunteering (e.g., trash cleanups, tree planting, gardening, food waste recovery, recycling, watershed monitoring, nature conservation).
+        2. If NOT related to sustainability or volunteering, return a JSON object with: {{"is_sustainability": false}}
+        3. If IT IS related, return a JSON object with:
+           - "is_sustainability": true
+           - "title": Clean, concise event title
+           - "organization": Partner name
+           - "type": "on-campus" if held at SJU/Hawk Hill, otherwise "off-campus"
+           - "category": One of ["Cleanups", "Forestry & Gardening", "Food Waste", "Education & Advocacy"]
+           - "date": Formatted human-readable date & time string
+           - "location": Specific venue or meeting point
+           - "description": 2-sentence summary tailored for student volunteers
+           - "tags": Array of 3 short relevant topic tags
+        """
+
+        try:
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json"
+                )
+            )
+            
+            structured = json.loads(response.text)
+            
+            if structured.get("is_sustainability"):
+                structured["id"] = idx
+                structured["distanceMiles"] = round(dist_miles, 1)
+                structured["link"] = item["link"]
+                structured["badgeColor"] = "bg-emerald-100 text-emerald-800" if structured.get("type") == "on-campus" else "bg-blue-100 text-blue-800"
+                
+                processed_opportunities.append(structured)
+                print(f"✅ Added: \"{structured['title']}\" ({round(dist_miles, 1)} mi from Hawk Hill)")
+            else:
+                print(f"⏩ Filtered out: \"{item['raw_title']}\" (Not sustainability/volunteer related)")
+
+        except Exception as err:
+            print(f"⚠️ Error parsing event #{idx} with Gemini: {err}")
+
+    return processed_opportunities
+
+# -------------------------------------------------------------------
+# 6. MAIN PIPELINE
+# -------------------------------------------------------------------
+def main():
+    # 1. Load manual campus opportunities
+    manual_events = load_manual_events("manual_opportunities.json")
+
+    # 2. Ingest raw RSS & iCal feeds
+    all_raw_events = []
+    print("📡 Ingesting live feeds from local Philadelphia partners...")
+    for feed in FEEDS_TO_SCRAPE:
+        print(f"  • Fetching {feed['type'].upper()} feed from {feed['name']}...")
+        if feed["type"] == "rss":
+            all_raw_events.extend(fetch_rss_events(feed))
+        elif feed["type"] == "ical":
+            all_raw_events.extend(fetch_ical_events(feed))
+
+    # 3. Filter and parse feed events with Gemini
+    scraped_events = process_and_structure_events(all_raw_events, starting_id=len(manual_events) + 1)
+
+    # 4. Merge: manual opportunities appear first, followed by live scraped events
+    combined_events = manual_events + scraped_events
+
+    # 5. Output unified JSON file for the dashboard frontend
+    output_filename = "sju_dashboard_opportunities.json"
+    with open(output_filename, "w", encoding="utf-8") as f:
+        json.dump(combined_events, f, indent=2)
+
+    print(f"\n🎉 Successfully published {len(combined_events)} total opportunities ({len(manual_events)} manual, {len(scraped_events)} automated) to '{output_filename}'!")
+
+if __name__ == "__main__":
+    main()
