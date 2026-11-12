@@ -79,16 +79,10 @@
         </div>
       </div>
 
-      <!-- Secondary Category Filters -->
-      <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 text-xs">
-        <span class="text-slate-500 font-medium uppercase tracking-wider mr-1">Category:</span>
-        <button onclick="setFilterCat('all', this)" id="cat-btn-all" class="cat-btn border border-emerald-600 bg-emerald-50 text-emerald-800 font-semibold px-2.5 py-1 rounded transition">All Categories</button>
-        <button onclick="setFilterCat('Cleanups', this)" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded transition">Trash & River Cleanups</button>
-        <button onclick="setFilterCat('Forestry & Gardening', this)" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded transition">Tree Planting & Gardening</button>
-        <button onclick="setFilterCat('Food Waste', this)" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded transition">Food Recovery & Composting</button>
-        <button onclick="setFilterCat('Education & Advocacy', this)" class="cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded transition">Education & Outreach</button>
-      </div>
-    </section>
+    <!-- Dynamic Secondary Category Filters -->
+<div id="category-filters" class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 text-xs">
+  <!-- Category buttons dynamically generated via JavaScript -->
+</div>
 
     <!-- Opportunities Grid -->
     <section>
@@ -254,7 +248,7 @@
     link: "https://www.sharefoodprogram.org/volunteer/",
     tags: ["Food Rescue", "Zero Waste", "Flexible"],
     badgeColor: "bg-amber-100 text-amber-800"
-  }
+  },
       {
         id: 11,
         title: "Second Saturday Natural Lands Restoration",
@@ -467,37 +461,78 @@
       filterOpportunities();
     }
 
-    function setFilterCat(cat, btnElement) {
-      currentCatFilter = cat;
-      document.querySelectorAll('.cat-btn').forEach(btn => {
-        btn.className = 'cat-btn border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded transition';
-      });
-      if (btnElement) {
-        btnElement.className = 'cat-btn border border-emerald-600 bg-emerald-50 text-emerald-800 font-semibold px-2.5 py-1 rounded transition';
+   // Dynamically builds category filter buttons from whatever categories exist in the dataset
+function renderCategoryButtons() {
+  const container = document.getElementById('category-filters');
+  if (!container) return;
+
+  // Extract unique, non-empty category names and sort alphabetically
+  const uniqueCategories = [...new Set(
+    opportunitiesData
+      .map(item => item.category)
+      .filter(cat => cat && cat.trim() !== '')
+  )].sort();
+
+  // If the currently selected category no longer exists in refreshed data, reset to 'all'
+  if (currentCatFilter !== 'all' && !uniqueCategories.includes(currentCatFilter)) {
+    currentCatFilter = 'all';
+  }
+
+  const activeClasses = "border border-emerald-600 bg-emerald-50 text-emerald-800 font-semibold px-2.5 py-1 rounded transition";
+  const inactiveClasses = "border border-slate-200 hover:border-slate-300 text-slate-600 px-2.5 py-1 rounded transition";
+
+  container.innerHTML = '';
+
+  const label = document.createElement('span');
+  label.className = "text-slate-500 font-medium uppercase tracking-wider mr-1";
+  label.textContent = "Category:";
+  container.appendChild(label);
+
+  const allBtn = document.createElement('button');
+  allBtn.type = "button";
+  allBtn.className = currentCatFilter === 'all' ? activeClasses : inactiveClasses;
+  allBtn.textContent = "All Categories";
+  allBtn.onclick = () => setFilterCat('all');
+  container.appendChild(allBtn);
+
+  uniqueCategories.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.type = "button";
+    btn.className = currentCatFilter === cat ? activeClasses : inactiveClasses;
+    btn.textContent = cat;
+    btn.onclick = () => setFilterCat(cat);
+    container.appendChild(btn);
+  });
+}
+
+function setFilterCat(cat) {
+  currentCatFilter = cat;
+  renderCategoryButtons();
+  filterOpportunities();
+}
+
+ async function loadOpportunities() {
+  try {
+    const response = await fetch(`sju_dashboard_opportunities.json?t=${new Date().getTime()}`);
+    if (response.ok) {
+      const data = await response.json();
+      if (Array.isArray(data) && data.length > 0) {
+        opportunitiesData = data;
+        renderCategoryButtons(); // <-- Added here
+        filterOpportunities();
       }
-      filterOpportunities();
     }
+  } catch (err) {
+    console.warn("Using fallback local data due to fetch error:", err);
+  }
+}
 
-    async function loadOpportunities() {
-      try {
-        const response = await fetch(`sju_dashboard_opportunities.json?t=${new Date().getTime()}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (Array.isArray(data) && data.length > 0) {
-            opportunitiesData = data;
-            filterOpportunities();
-          }
-        }
-      } catch (err) {
-        console.warn("Using fallback local data due to fetch error:", err);
-      }
-    }
+// 1. Build dynamic category buttons & render initial cards immediately
+renderCategoryButtons(); // <-- Added here
+filterOpportunities();
 
-    // 1. Initial render happens immediately without waiting for events or network
-    filterOpportunities();
-
-    // 2. Background update fetches fresh JSON if available
-    loadOpportunities();
+// 2. Fetch fresh JSON in the background and re-build categories if updated
+loadOpportunities();
   </script>
 </body>
 </html>
